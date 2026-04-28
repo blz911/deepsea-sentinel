@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SRS – DeepSea Sentinel | Software Engineering | CUJ</title>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── BODY ── */
+body{
+  font-family: Cambria, "Palatino Linotype", Georgia, serif;
+  font-size: 12pt;
+  color: #000;
+  background: #787878;
+  line-height: 1.5;
+}
+
+/* ── PAGE ── */
+.page{
+  width: 210mm;
+  background: #fff;
+  margin: 8mm auto;
+  padding: 15mm 25mm 20mm 25mm;
+  box-shadow: 0 2px 18px rgba(0,0,0,.4);
+  page-break-after: always;
+  position: relative;
+}
+.page:last-of-type{ page-break-after: auto; }
+
+/* ── PAGE NUMBER (absolute bottom-right of page) ── */
+.page-num{
+  position: absolute;
+  bottom: 8mm;
+  right: 15mm;
+  font-size: 11pt;
+  color: #333;
+}
+
+/* ── PRINT BUTTON ── */
+.no-print{
+  position: fixed; top: 12px; right: 14px;
+  background: #1a237e; color: #fff;
+  border: none; padding: 10px 22px; font-size: 13px;
+  border-radius: 4px; cursor: pointer; z-index: 9999;
+  font-family: Arial, sans-serif; letter-spacing: .5px;
+}
+.no-print:hover{ background: #283593; }
+
+/* ═══════ COVER PAGE ═══════ */
+.cover{
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  height: 240mm; gap: 0;
+}
+.cover-dept{
+  font-size: 16pt; font-weight: bold;
+  text-transform: uppercase; line-height: 1.3;
+}
+.cover-logo{ width: 90px; margin: 14px 0; }
+.cover-course{ font-size: 16pt; font-weight: bold; margin: 4px 0; }
+.cover-code{   font-size: 16pt; font-weight: bold; margin: 0 0 16px; }
+.cover-by{     font-size: 16pt; font-weight: bold; margin: 12px 0 4px; text-align: left; padding-left: 60px; }
+.cover-info{   font-size: 15pt; font-weight: bold; text-align: center; line-height: 1.6; }
+.cover-bottom{
+  margin-top: 20px; text-align: center;
+}
+.cover-bottom img{ width: 48px; display: block; margin: 0 auto 4px; }
+.cover-bottom-text{ font-size: 18pt; font-weight: bold; }
+
+/* ═══════ PAGE HEADER (Logo + Dept) ═══════ */
+.pg-hdr{
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px;
+}
+.pg-hdr img{ width: 70px; flex-shrink: 0; }
+.pg-hdr-txt{
+  flex: 1; text-align: center;
+}
+.pg-hdr-txt .d1{
+  font-size: 14pt; font-weight: bold;
+  text-transform: uppercase; line-height: 1.3;
+}
+.pg-hdr-txt .d2{
+  font-size: 14pt; font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* horizontal rule after header */
+.hdr-rule{ border: none; border-top: 2px solid #000; margin: 0 0 10px; }
+
+/* ═══════ COURSE INFO TABLE ═══════ */
+.info-tbl{
+  width: 100%; border-collapse: collapse;
+  margin-bottom: 6px; font-size: 10.5pt;
+}
+.info-tbl td{
+  border: 1.5px solid #000;
+  padding: 2px 6px; vertical-align: middle;
+}
+.info-tbl .lbl{ font-weight: bold; width: 28%; }
+
+/* ═══════ INDEX TABLE ═══════ */
+.idx-tbl{
+  width: 100%; border-collapse: collapse; font-size: 11.5pt;
+}
+.idx-tbl th, .idx-tbl td{
+  border: 1.5px solid #000; padding: 5px 8px;
+}
+.idx-tbl th{ background: #d0d8e8; font-weight: bold; text-align: center; }
+.idx-tbl td:first-child{ text-align: center; font-weight: bold; width: 10%; }
+.idx-header{ background: #d0d8e8; font-weight: bold; text-align: center; font-size: 13pt; }
+
+/* ═══════ OBJECTIVE / TITLE TABLE ═══════ */
+.obj-tbl{
+  width: 100%; border-collapse: collapse; margin-bottom: 4px;
+}
+.obj-tbl td{ border: 1.5px solid #000; padding: 3px 6px; }
+.obj-tbl .obj-hdr{
+  background: #d0d8e8; font-weight: bold; font-size: 10.5pt;
+  text-align: left; font-style: italic;
+}
+.obj-tbl .obj-num{
+  font-weight: bold; font-size: 10.5pt;
+  width: 5%; text-align: center; vertical-align: top;
+}
+.obj-tbl .obj-body{
+  font-size: 10.5pt; vertical-align: top;
+}
+.obj-tbl .obj-title{
+  font-weight: bold; font-size: 11pt;
+}
+
+/* ═══════ CONTENT BOX TABLES ═══════ */
+.box-tbl{
+  width: 100%; border-collapse: collapse; margin-bottom: 4px;
+}
+.box-tbl td{ border: 1.5px solid #000; padding: 4px 8px; vertical-align: top; font-size: 10.5pt; }
+.box-tbl .box-hdr{
+  background: #d0d8e8; font-weight: bold; font-size: 10.5pt;
+  padding: 3px 8px;
+}
+
+/* ═══════ GENERIC DATA TABLE ═══════ */
+.data-tbl{
+  width: 100%; border-collapse: collapse; margin: 2px 0; font-size: 9.5pt;
+}
+.data-tbl th{
+  background: #d0d8e8; font-weight: bold;
+  border: 1.5px solid #000; padding: 2px 5px; text-align: left;
+}
+.data-tbl td{
+  border: 1.5px solid #000; padding: 2px 5px; vertical-align: top;
+}
+
+/* ═══════ HEADINGS INSIDE CONTENT ═══════ */
+h3.sec{ font-size: 10.5pt; font-weight: bold; margin: 4px 0 2px; }
+h4.sec{ font-size: 10pt; font-weight: bold; margin: 3px 0 1px; }
+p{ margin: 1px 0 3px; text-align: justify; font-size: 10.5pt; }
+ul, ol{ margin: 2px 0 3px 18px; font-size: 10.5pt; }
+li{ margin-bottom: 0; }
+
+/* ═══════ CODE BLOCKS (light bg for ink saving) ═══════ */
+pre.code{
+  background: #f5f5f5; color: #222;
+  font-family: "Courier New", Consolas, monospace;
+  font-size: 8.5pt; padding: 8px 10px;
+  border: 1.5px solid #999; border-radius: 0;
+  overflow-x: auto; line-height: 1.35; margin: 4px 0;
+  white-space: pre-wrap; word-wrap: break-word;
+}
+
+/* ═══════ IMAGES ═══════ */
+.dia-img{
+  display: block; max-width: 88%; margin: 6px auto;
+  border: 1px solid #aaa;
+}
+.fig-cap{
+  text-align: center; font-style: italic; font-size: 10pt;
+  margin: 3px 0 6px; color: #333;
+}
+.ss-img{
+  display: block; width: 100%; border: 1px solid #bbb; margin: 4px 0;
+}
+
+/* ═══════ PRINT ═══════ */
+@page { margin: 0; padding: 0; size: A4; }
+@media print{
+  body{ background: #fff; margin: 0; padding: 0; }
+  .page{
+    box-shadow: none;
+    margin: 0;
+    padding: 15mm 25mm 20mm 25mm;
+    width: 210mm;
+    min-height: 297mm;
+    position: relative;
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+  .page:last-of-type{ page-break-after: auto; }
+  .no-print{ display: none; }
+}
+</style>
+</head>
+<body>
+<button class="no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+
+<!-- ═══ PAGE 1 — COVER ═══ -->
+<div class="page">
+<div class="cover">
+  <div class="cover-dept">Department of Computer Science &amp; Engineering</div>
+  <img class="cover-logo" src="srs_assets/cuj_logo_official.jpeg" alt="CUJ Logo"/>
+  <div class="cover-course">Software Engineering</div>
+  <div class="cover-code">BECCS2C025</div>
+  <div class="cover-by">&emsp;Prepared by:</div>
+  <div class="cover-info">
+    Name: Satyam Kumar Chauhan<br/>
+    Roll No: 24BECCS47<br/>
+    Branch: Computer Science &amp; Engineering<br/>
+    Semester: 4th Semester<br/>
+  </div>
+  <div style="font-size:14pt;font-weight:bold;margin-top:8px;">Project: DeepSea Sentinel — Vulnerability Scanner</div>
+  <div class="cover-bottom">
+    <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+    <div class="cover-bottom-text">Central University of Jammu</div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ PAGE 2 — INDEX ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="idx-tbl">
+  <tr><td class="idx-header" colspan="3">INDEX</td></tr>
+  <tr><th>Sr. No.</th><th>Title</th><th>Page No.</th></tr>
+  <tr><td>1</td><td>Brief Introduction of the project: Aim, Scope, Objective etc.
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Aim &amp; Scope</li>
+      <li>Target Audience</li>
+      <li>Problem Statement</li>
+      <li>Proposed Solution</li>
+      <li>Objectives</li>
+    </ul>
+  </td><td style="text-align:center">4</td></tr>
+  <tr><td>2</td><td>Feasibility study of the project.
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Technical Feasibility</li>
+      <li>Operational Feasibility</li>
+      <li>Economic Feasibility</li>
+      <li>Schedule Feasibility</li>
+    </ul>
+  </td><td style="text-align:center">6</td></tr>
+  <tr><td>3</td><td>Functional and Non Functional Requirements.
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Functional Requirements (FR-01 to FR-13)</li>
+      <li>Non-Functional Requirements</li>
+      <li>Pseudocode / Algorithm</li>
+    </ul>
+  </td><td style="text-align:center">8</td></tr>
+  <tr><td>4</td><td>Software Requirements and Specifications (SRS)
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Product Perspective</li>
+      <li>User Classes &amp; Characteristics</li>
+      <li>Operating Environment</li>
+      <li>Data Dictionary</li>
+      <li>Design &amp; Implementation Constraints</li>
+      <li>Assumptions &amp; Dependencies</li>
+    </ul>
+  </td><td style="text-align:center">10</td></tr>
+  <tr><td>5</td><td>Data Flow diagrams (DFD)
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>DFD Level 0 (Context Diagram)</li>
+      <li>DFD Level 1</li>
+      <li>DFD Level 2</li>
+    </ul>
+  </td><td style="text-align:center">12</td></tr>
+</table>
+<div class="page-num">2</div>
+</div>
+
+<!-- ═══ PAGE 3 — INDEX (continued) ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="idx-tbl">
+  <tr><td class="idx-header" colspan="3">INDEX (continued)</td></tr>
+  <tr><th>Sr. No.</th><th>Title</th><th>Page No.</th></tr>
+  <tr><td>6</td><td>Use case diagrams
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Use Case Diagram</li>
+      <li>Use Case Descriptions (UC-01 to UC-05)</li>
+    </ul>
+  </td><td style="text-align:center">15</td></tr>
+  <tr><td>7</td><td>Sequence diagrams
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Scan Workflow Sequence</li>
+      <li>PDF Export Sequence</li>
+    </ul>
+  </td><td style="text-align:center">17</td></tr>
+  <tr><td>8</td><td>Coding and Implementation
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Technology Stack</li>
+      <li>Project File Structure</li>
+      <li>Key Code Snippets</li>
+      <li>Screenshots</li>
+    </ul>
+  </td><td style="text-align:center">19</td></tr>
+  <tr><td>9</td><td>Unit and System Testing
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Unit Test Cases (UT-01 to UT-10)</li>
+      <li>System Test Cases (ST-01 to ST-06)</li>
+    </ul>
+  </td><td style="text-align:center">25</td></tr>
+  <tr><td>10</td><td>RMMM plan.
+    <ul style="margin:2px 0 0 18px;font-weight:normal;font-size:9pt;list-style:disc">
+      <li>Risk Identification Table</li>
+      <li>Risk Monitoring Strategy</li>
+      <li>Risk Management Plan</li>
+    </ul>
+  </td><td style="text-align:center">27</td></tr>
+</table>
+<div class="page-num">3</div>
+</div>
+
+<!-- ═══ PAGE 3 — SECTION 1: INTRODUCTION ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">1</td>
+    <td class="obj-body">
+      <span class="obj-title">Introduction to DeepSea Sentinel — Vulnerability Scanner</span>
+      <p style="margin-top:6px">
+        DeepSea Sentinel is a web-based vulnerability scanner dashboard that allows users to enter any URL or
+        domain name and receive an automated, multi-module security posture analysis. The tool simulates the
+        information-gathering phase of a security audit by checking for SSL/TLS weaknesses, missing HTTP
+        security headers, exposed sensitive files, insecure DNS email records, and detectable technology
+        stack components.
+      </p>
+      <h3 class="sec">Aim</h3>
+      <p>To design and develop a browser-based security analysis tool that gives users a quick, comprehensive,
+      and actionable snapshot of a website's security posture using a single-click scanning workflow.</p>
+      <h3 class="sec">Scope</h3>
+      <ul>
+        <li>URL-based scanning: Input any URL/IP; system extracts hostname and runs checks.</li>
+        <li>Five security modules: SSL/TLS, HTTP Headers, Sensitive Files, DNS Email, Tech Stack.</li>
+        <li>Weighted risk grading: Score (0–100) and letter grade (A–F).</li>
+        <li>Scan history: Persistent log in browser localStorage.</li>
+        <li>PDF reports: Exportable security report via browser print API.</li>
+        <li>Admin panel: CPU chart, memory gauge, SLA uptime, service health.</li>
+      </ul>
+      <h3 class="sec">Objectives</h3>
+      <ol>
+        <li>Provide a free, browser-accessible first-pass security assessment tool.</li>
+        <li>Aggregate five security checks into one unified dashboard.</li>
+        <li>Educate users via inline remediation suggestions.</li>
+        <li>Demonstrate front-end software engineering: HTML5, Tailwind CSS, Vanilla JS.</li>
+        <li>Produce a full IEEE 830-compliant SRS document.</li>
+      </ol>
+    </td>
+  </tr>
+</table>
+<div class="page-num">4</div>
+</div>
+
+<!-- ═══ PAGE 4 — INTRODUCTION continued (Problem Statement) ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">1.5 Problem Statement</h3>
+    <p>
+      Most website owners — small businesses, students, startups — have no visibility into their web
+      application's security posture. Enterprise-grade tools (Qualys, Nessus) are expensive; free tools like
+      Mozilla Observatory cover only a subset of checks without a unified, readable UI. DeepSea Sentinel
+      fills this gap with a zero-cost, single-click, multi-module scanner with professional-grade reporting.
+    </p>
+
+    <h3 class="sec">1.6 Key Features</h3>
+    <table class="data-tbl">
+      <tr><th>Feature</th><th>Description</th></tr>
+      <tr><td>Single-Click Scan</td><td>Enter URL → one button → full security assessment</td></tr>
+      <tr><td>5-Module Engine</td><td>SSL, Headers, Files, DNS, Tech Stack — all in one dashboard</td></tr>
+      <tr><td>Letter Grade</td><td>A–F grading with color-coded score circle</td></tr>
+      <tr><td>Scan History</td><td>localStorage-powered persistent scan log with search/filter</td></tr>
+      <tr><td>PDF Reports</td><td>Print-ready report generated via window.open() print API</td></tr>
+      <tr><td>Dark Theme</td><td>Glassmorphic deep-sea aesthetic with sonar animations</td></tr>
+      <tr><td>Admin Panel</td><td>CPU, memory, uptime, and service health monitoring</td></tr>
+    </table>
+
+    <h3 class="sec">1.7 Target Users</h3>
+    <ul>
+      <li><strong>Students</strong> — learning web security concepts hands-on</li>
+      <li><strong>Small Business Owners</strong> — first-pass security check for their websites</li>
+      <li><strong>Freelance Developers</strong> — quick pre-deployment security audit</li>
+      <li><strong>Security Enthusiasts</strong> — exploring common vulnerability categories</li>
+    </ul>
+  </td></tr>
+</table>
+<div class="page-num">5</div>
+</div>
+
+<!-- ═══ PAGE 5 — SECTION 2: FEASIBILITY (Part 1) ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">2</td>
+    <td class="obj-body">
+      <span class="obj-title">Feasibility Study of the Project</span>
+
+      <h3 class="sec">2.1 Technical Feasibility</h3>
+      <p>The system is built entirely with free, browser-native technologies:</p>
+      <table class="data-tbl">
+        <tr><th>Component</th><th>Technology</th><th>Assessment</th></tr>
+        <tr><td>Frontend UI</td><td>HTML5, Tailwind CSS, Vanilla JS</td><td>✔ Mature, zero build-step</td></tr>
+        <tr><td>SSL Analysis</td><td>Node.js tls / SSL Labs API</td><td>✔ Free public API</td></tr>
+        <tr><td>Header Analysis</td><td>HTTP GET inspection</td><td>✔ Standard HTTP probe</td></tr>
+        <tr><td>DNS Analysis</td><td>Node.js dns module</td><td>✔ Built-in, no dependency</td></tr>
+        <tr><td>File Exposure</td><td>HTTP GET for known paths</td><td>✔ Standard HTTP probe</td></tr>
+        <tr><td>Tech Detection</td><td>Wappalyzer-style fingerprinting</td><td>✔ Open-source patterns</td></tr>
+        <tr><td>Persistence</td><td>Browser localStorage</td><td>✔ No server required</td></tr>
+        <tr><td>PDF Export</td><td>window.print() API</td><td>✔ Native, no library</td></tr>
+      </table>
+      <p><strong>Conclusion:</strong> Technically feasible. All modules use standard APIs and free services.</p>
+
+      <h3 class="sec">2.2 Operational Feasibility</h3>
+      <p>Single URL input → one-click scan → visual grade + module breakdown. No technical expertise required.
+      Deployable to GitHub Pages, Vercel, or Netlify at zero cost.</p>
+      <p><strong>Conclusion:</strong> Highly operable. Minimal friction UX.</p>
+    </td>
+  </tr>
+</table>
+<div class="page-num">6</div>
+</div>
+
+<!-- ═══ PAGE 6 — FEASIBILITY (Part 2) ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">2.3 Economic Feasibility</h3>
+    <table class="data-tbl">
+      <tr><th>Item</th><th>Cost</th></tr>
+      <tr><td>VS Code, Node.js, Python 3</td><td>Free / Open-source</td></tr>
+      <tr><td>Tailwind CSS CDN, Google Fonts</td><td>Free</td></tr>
+      <tr><td>GitHub Pages / Vercel hosting</td><td>Free tier</td></tr>
+      <tr><td>Domain name (optional)</td><td>≈ ₹800/year</td></tr>
+      <tr><td><strong>Total (minimum viable)</strong></td><td><strong>₹ 0</strong></td></tr>
+    </table>
+
+    <h3 class="sec">2.4 Schedule Feasibility</h3>
+    <table class="data-tbl">
+      <tr><th>Phase</th><th>Activity</th><th>Duration</th></tr>
+      <tr><td>Phase 1</td><td>Requirements analysis &amp; SRS documentation</td><td>2 days</td></tr>
+      <tr><td>Phase 2</td><td>UI/UX design system &amp; wireframes</td><td>2 days</td></tr>
+      <tr><td>Phase 3</td><td>HTML/CSS for all 7 pages</td><td>3 days</td></tr>
+      <tr><td>Phase 4</td><td>JavaScript scan engine, routing, localStorage</td><td>3 days</td></tr>
+      <tr><td>Phase 5</td><td>Integration, bug fixing, cross-browser testing</td><td>2 days</td></tr>
+      <tr><td>Phase 6</td><td>PDF report &amp; SRS finalization</td><td>1 day</td></tr>
+      <tr><td colspan="2"><strong>Total</strong></td><td><strong>~13 days</strong></td></tr>
+    </table>
+    <p><strong>Conclusion:</strong> Comfortably achievable within the academic semester timeline.</p>
+  </td></tr>
+</table>
+<div class="page-num">7</div>
+</div>
+
+<!-- ═══ PAGE 7 — SECTION 3: FUNCTIONAL REQUIREMENTS ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">3</td>
+    <td class="obj-body">
+      <span class="obj-title">Functional and Non-Functional Requirements</span>
+
+      <h3 class="sec">3.1 Functional Requirements</h3>
+      <ol>
+        <li><strong>URL Input:</strong> User enters a URL/IP and clicks "Start Scan".</li>
+        <li><strong>SSL/TLS Analysis:</strong> Check certificate validity, expiry, protocol, cipher.</li>
+        <li><strong>HTTP Security Headers:</strong> Verify CSP, HSTS, X-Frame-Options, etc.</li>
+        <li><strong>Sensitive File Exposure:</strong> Probe for /.env, /.git/HEAD, /robots.txt, etc.</li>
+        <li><strong>Technology Detection:</strong> Identify web server, CMS, JS frameworks.</li>
+        <li><strong>DNS Email Security:</strong> Evaluate SPF, DKIM, DMARC records.</li>
+        <li><strong>Security Score:</strong> Weighted score (0–100) and letter grade (A–F).</li>
+        <li><strong>Results Dashboard:</strong> Colour-coded module cards and grade circle.</li>
+        <li><strong>Scanning UI:</strong> Sonar animation and per-module progress bars.</li>
+        <li><strong>User Authentication:</strong> Sign In / Register page.</li>
+        <li><strong>Scan History:</strong> View, search, filter, and delete past scans.</li>
+        <li><strong>PDF Report:</strong> Printable PDF report with all findings.</li>
+        <li><strong>Admin Panel:</strong> CPU chart, memory gauge, uptime SLA, service health.</li>
+      </ol>
+    </td>
+  </tr>
+</table>
+<div class="page-num">8</div>
+</div>
+
+<!-- ═══ PAGE 8 — NON-FUNCTIONAL REQUIREMENTS + PSEUDOCODE ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">3.2 Non-Functional Requirements</h3>
+    <ol>
+      <li><strong>Performance:</strong> Scan simulation completes within 12 seconds.</li>
+      <li><strong>Usability:</strong> Fully responsive from 375px to 1920px screen width.</li>
+      <li><strong>Accessibility:</strong> Animations respect prefers-reduced-motion query.</li>
+      <li><strong>Security:</strong> User passwords never stored in plain text.</li>
+      <li><strong>Portability:</strong> Pure-frontend static files, no backend required.</li>
+      <li><strong>Reliability:</strong> Scan history persists via localStorage.</li>
+      <li><strong>Maintainability:</strong> Consistent naming conventions with documentation.</li>
+      <li><strong>Legal/Ethical:</strong> Passive information gathering only.</li>
+    </ol>
+  </td></tr>
+</table>
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Pseudocode / Algorithm</td></tr>
+  <tr><td>
+<pre class="code">FUNCTION calculateOverallScore(moduleResults):
+  INPUT:  Results from all five scan modules
+  OUTPUT: Grade letter (A-F) and numeric score (0-100)
+
+  weights = { ssl:30, headers:25, files:25, dns:10, tech:10 }
+
+  FOR EACH module IN [ssl, headers, files, dns, tech]:
+    moduleScore  = evaluateModule(module.results)
+    weightedSum += moduleScore * weights[module] / 100
+
+  overallScore = ROUND(weightedSum)
+
+  IF overallScore >= 90  THEN grade = "A"  (Excellent)
+  IF overallScore >= 70  THEN grade = "B"  (Good)
+  IF overallScore >= 50  THEN grade = "C"  (Fair)
+  IF overallScore >= 30  THEN grade = "D"  (Poor)
+  ELSE                        grade = "F"  (Critical)
+
+  RETURN { grade, overallScore, moduleBreakdown }
+END FUNCTION</pre>
+  </td></tr>
+</table>
+<div class="page-num">9</div>
+</div>
+
+<!-- ═══ PAGE 9 — SECTION 4: SRS (Part 1) ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">4</td>
+    <td class="obj-body">
+      <span class="obj-title">Software Requirements and Specifications (SRS)</span>
+
+      <table class="data-tbl" style="margin:6px 0 10px;">
+        <tr><th colspan="3" style="text-align:center;background:#d0d8e8;font-weight:bold">SRS Sub-Index</th></tr>
+        <tr><th>Section</th><th>Title</th><th style="width:15%;text-align:center">Page</th></tr>
+        <tr><td>4.1</td><td>Product Perspective</td><td style="text-align:center">10</td></tr>
+        <tr><td>4.2</td><td>User Classes and Characteristics</td><td style="text-align:center">10</td></tr>
+        <tr><td>4.3</td><td>Operating Environment</td><td style="text-align:center">10</td></tr>
+        <tr><td>4.4</td><td>Data Dictionary</td><td style="text-align:center">11</td></tr>
+        <tr><td>4.5</td><td>Design and Implementation Constraints</td><td style="text-align:center">11</td></tr>
+        <tr><td>4.6</td><td>Assumptions and Dependencies</td><td style="text-align:center">11</td></tr>
+      </table>
+
+      <h3 class="sec">4.1 Product Perspective</h3>
+      <p>DeepSea Sentinel is a standalone front-end web application operating entirely in the browser.
+      It acts as a lightweight alternative to enterprise tools like Qualys or Nessus.</p>
+
+      <h3 class="sec">4.2 User Classes</h3>
+      <table class="data-tbl">
+        <tr><th>User Class</th><th>Description</th><th>Access Level</th></tr>
+        <tr><td>Guest</td><td>Unauthenticated visitor</td><td>Initiate scans; no history</td></tr>
+        <tr><td>Registered User</td><td>Authenticated user</td><td>History, PDF export</td></tr>
+        <tr><td>Admin</td><td>System administrator</td><td>User mgmt, system metrics</td></tr>
+      </table>
+
+      <h3 class="sec">4.3 Operating Environment</h3>
+      <table class="data-tbl">
+        <tr><th>Component</th><th>Requirement</th></tr>
+        <tr><td>Browser</td><td>Chrome 90+, Firefox 88+, Safari 14+, Edge 90+</td></tr>
+        <tr><td>Internet</td><td>Required for CDN assets (Tailwind, Fonts)</td></tr>
+        <tr><td>Local Server</td><td>Python 3 HTTP server or VS Code Live Server</td></tr>
+        <tr><td>Storage</td><td>Browser localStorage (~5 MB per origin)</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<div class="page-num">10</div>
+</div>
+
+<!-- ═══ PAGE 10 — SRS (Part 2: Data Dictionary + Constraints) ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">4.4 Data Dictionary</h3>
+    <table class="data-tbl">
+      <tr><th>Data Element</th><th>Type</th><th>Description</th></tr>
+      <tr><td>scanId</td><td>String</td><td>Unique ID: SENT-XXXX-XXXXXX</td></tr>
+      <tr><td>hostname</td><td>String</td><td>Target domain from user input</td></tr>
+      <tr><td>overall</td><td>Number (0–100)</td><td>Weighted composite security score</td></tr>
+      <tr><td>grade</td><td>String (A–F)</td><td>Letter grade from overall score</td></tr>
+      <tr><td>modules.ssl</td><td>Object</td><td>Score, protocol, cert validity, cipher</td></tr>
+      <tr><td>modules.headers</td><td>Object</td><td>Score, present/missing headers</td></tr>
+      <tr><td>modules.files</td><td>Object</td><td>Score, probed/exposed paths</td></tr>
+      <tr><td>modules.dns</td><td>Object</td><td>Score, SPF/DKIM/DMARC booleans</td></tr>
+      <tr><td>modules.tech</td><td>Object</td><td>Score, detected technologies</td></tr>
+      <tr><td>timestamp</td><td>ISO 8601 Date</td><td>Scan initiation time</td></tr>
+    </table>
+
+    <h3 class="sec">4.5 Constraints &amp; Assumptions</h3>
+    <ul>
+      <li>Current version uses a deterministic simulation engine; future backend replaces it with real probes.</li>
+      <li>localStorage limited to ~5 MB; scan history capped at 50 entries.</li>
+      <li>Application performs passive information gathering only — no active exploitation.</li>
+    </ul>
+  </td></tr>
+</table>
+<div class="page-num">11</div>
+</div>
+
+<!-- ═══ PAGE 11 — SECTION 5: DFD Level 0 ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">5</td>
+    <td class="obj-body">
+      <span class="obj-title">Data Flow Diagrams (DFD)</span>
+    </td>
+  </tr>
+</table>
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots</td></tr>
+  <tr><td>
+    <h3 class="sec">5.1 DFD Level 0 (Context Diagram)</h3>
+    <img class="dia-img" src="srs_assets/dfd_l0.png" alt="DFD Level 0" style="max-width:80%"/>
+    <p class="fig-cap">Fig. 5.1 — Level 0 DFD Diagram</p>
+    <p><strong>Explanation:</strong> The Level 0 diagram presents DeepSea Sentinel as a single process.
+    Three entities interact: the <strong>User</strong> (URL input, receives report), the <strong>Target Website</strong>
+    (HTTP/DNS/TLS responses), and <strong>localStorage</strong> (scan history storage).</p>
+  </td></tr>
+</table>
+<div class="page-num">12</div>
+</div>
+
+<!-- ═══ PAGE 12 — DFD LEVEL 1 ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots</td></tr>
+  <tr><td>
+    <h3 class="sec">5.2 DFD Level 1 Diagram</h3>
+    <img class="dia-img" src="srs_assets/dfd_l1.png" alt="DFD Level 1" style="max-width:80%"/>
+    <p class="fig-cap">Fig. 5.2 — Level 1 DFD Diagram</p>
+    <p><strong>Explanation:</strong> Level 1 decomposes into four sub-processes:
+    <strong>1.0 Input Validation</strong>, <strong>2.0 Scan Orchestrator</strong>,
+    <strong>3.0 Score Calculator</strong>, and <strong>4.0 Result Renderer</strong>.</p>
+  </td></tr>
+</table>
+<div class="page-num">13</div>
+</div>
+
+<!-- ═══ PAGE 13 — DFD Level 2 ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">5.3 Level 2 DFD — Scan Orchestrator Expansion</h3>
+    <p>The Level 2 DFD expands Process 2.0 to show how the five modules operate:</p>
+    <table class="data-tbl">
+      <tr><th>Process</th><th>Module</th><th>Input</th><th>Output</th></tr>
+      <tr><td>2.1</td><td>SSL Scanner</td><td>hostname</td><td>cert validity, protocol, cipher, score</td></tr>
+      <tr><td>2.2</td><td>Headers Scanner</td><td>hostname</td><td>present/missing headers, score</td></tr>
+      <tr><td>2.3</td><td>File Exposure Scanner</td><td>hostname</td><td>exposed paths list, score</td></tr>
+      <tr><td>2.4</td><td>DNS Email Scanner</td><td>hostname</td><td>SPF/DKIM/DMARC booleans, score</td></tr>
+      <tr><td>2.5</td><td>Tech Stack Detector</td><td>hostname</td><td>technology strings list, score</td></tr>
+    </table>
+  </td></tr>
+</table>
+<div class="page-num">14</div>
+</div>
+
+<!-- ═══ PAGE 14 — SECTION 6: USE CASE ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">6</td>
+    <td class="obj-body">
+      <span class="obj-title">Use Case Diagrams</span>
+    </td>
+  </tr>
+</table>
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots</td></tr>
+  <tr><td>
+    <img class="dia-img" src="srs_assets/usecase.png" alt="Use Case Diagram" style="max-width:78%"/>
+    <p class="fig-cap">Fig. 6.1 — Use Case Diagram for DeepSea Sentinel</p>
+    <p><strong>Explanation:</strong> Three actors — <strong>Guest</strong>,
+    <strong>Registered User</strong>, and <strong>Admin</strong>. Guest scans URLs and views results.
+    Registered Users access history and export PDFs. Admins access system metrics.</p>
+  </td></tr>
+</table>
+<div class="page-num">15</div>
+</div>
+
+<!-- ═══ PAGE 15 — USE CASE DESCRIPTION ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">Use Case Description — UC-01: Scan a URL</h3>
+    <table class="data-tbl">
+      <tr><td style="font-weight:bold;width:28%">Use Case ID</td><td>UC-01</td></tr>
+      <tr><td style="font-weight:bold">Name</td><td>Scan a URL / Domain</td></tr>
+      <tr><td style="font-weight:bold">Actor(s)</td><td>Guest User, Registered User</td></tr>
+      <tr><td style="font-weight:bold">Preconditions</td><td>User has internet access; agreed to ToS</td></tr>
+      <tr><td style="font-weight:bold">Main Flow</td><td>
+        1. User enters a URL on landing page.<br/>
+        2. User clicks "Start Scan".<br/>
+        3. System validates URL and extracts hostname.<br/>
+        4. System navigates to scanning.html; runs 5 modules.<br/>
+        5. System calculates weighted security score.<br/>
+        6. System redirects to dashboard.html with results.
+      </td></tr>
+      <tr><td style="font-weight:bold">Postconditions</td><td>Results displayed; saved to localStorage.</td></tr>
+    </table>
+
+    <h3 class="sec">Use Case Description — UC-02: Export PDF Report</h3>
+    <table class="data-tbl">
+      <tr><td style="font-weight:bold;width:28%">Use Case ID</td><td>UC-02</td></tr>
+      <tr><td style="font-weight:bold">Name</td><td>Export PDF Report</td></tr>
+      <tr><td style="font-weight:bold">Actor(s)</td><td>Registered User</td></tr>
+      <tr><td style="font-weight:bold">Preconditions</td><td>Scan has been completed</td></tr>
+      <tr><td style="font-weight:bold">Main Flow</td><td>
+        1. User opens report.html.<br/>
+        2. System loads latest scan from localStorage.<br/>
+        3. System populates all report fields.<br/>
+        4. User clicks "Download PDF Report".<br/>
+        5. printReport() opens new window with report HTML.<br/>
+        6. Browser print dialog appears → user saves as PDF.
+      </td></tr>
+      <tr><td style="font-weight:bold">Postconditions</td><td>PDF file saved to user's device.</td></tr>
+    </table>
+  </td></tr>
+</table>
+<div class="page-num">16</div>
+</div>
+
+<!-- ═══ PAGE 16 — SECTION 7: SEQUENCE DIAGRAM ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">7</td>
+    <td class="obj-body">
+      <span class="obj-title">Sequence Diagrams</span>
+    </td>
+  </tr>
+</table>
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots</td></tr>
+  <tr><td>
+    <img class="dia-img" src="srs_assets/seq_scan.png" alt="Sequence Diagram" style="max-width:78%"/>
+    <p class="fig-cap">Fig. 7.1 — Sequence Diagram: Scan a URL Flow</p>
+    <p><strong>Explanation:</strong> User enters URL on index.html → browser calls validateURL() in app.js →
+    stores pending scan in localStorage → redirects to scanning.html → simulateScan() runs 5 modules →
+    calculates grade → saves result → redirects to dashboard.html.</p>
+  </td></tr>
+</table>
+<div class="page-num">17</div>
+</div>
+
+<!-- ═══ PAGE 17 — SEQUENCE: PDF Export Step Table ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">7.2 PDF Report Export — Step Table</h3>
+    <table class="data-tbl">
+      <tr><th>Step</th><th>Actor</th><th>Message / Action</th></tr>
+      <tr><td>1</td><td>User</td><td>Opens report.html</td><td style="text-align:center">3</td></tr>
+      <tr><td>2</td><td>report.html</td><td>DOMContentLoaded → calls app.js</td><td style="text-align:center">5</td></tr>
+      <tr><td>3</td><td>app.js</td><td>Gets latest_scan from localStorage</td><td style="text-align:center">7</td></tr>
+      <tr><td>4</td><td>app.js</td><td>Populates all DOM fields (hostname, grade, findings)</td><td style="text-align:center">9</td></tr>
+      <tr><td>5</td><td>User</td><td>Clicks "Download PDF Report"</td><td style="text-align:center">11</td></tr>
+      <tr><td>6</td><td>printReport()</td><td>Builds self-contained HTML string with scan data</td><td style="text-align:center">14</td></tr>
+      <tr><td>7</td><td>printReport()</td><td>window.open() → new browser window</td><td style="text-align:center">16</td></tr>
+      <tr><td>8</td><td>new window</td><td>document.write(html) + document.close()</td><td style="text-align:center">18</td></tr>
+      <tr><td>9</td><td>Browser</td><td>setTimeout 900ms → window.print()</td><td style="text-align:center">24</td></tr>
+      <tr><td>10</td><td>Browser</td><td>Print dialog appears → User saves as PDF</td><td style="text-align:center">26</td></tr>
+    </table>
+  </td></tr>
+</table>
+<div class="page-num">18</div>
+</div>
+
+<!-- ═══ PAGE 18 — SECTION 8: CODING (Tech Stack + Structure) ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">8</td>
+    <td class="obj-body">
+      <span class="obj-title">Coding and Implementation</span>
+
+      <h3 class="sec">8.1 Technology Stack</h3>
+      <table class="data-tbl">
+        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+        <tr><td>Markup</td><td>HTML5</td><td>Structure for all 7 pages</td></tr>
+        <tr><td>Styling</td><td>Tailwind CSS 3 (CDN)</td><td>Utility-first CSS, dark-mode</td></tr>
+        <tr><td>Logic</td><td>Vanilla JavaScript (ES6+)</td><td>Scan engine, routing, PDF</td></tr>
+        <tr><td>Fonts</td><td>Google Fonts (Inter, Space Grotesk)</td><td>Typography</td></tr>
+        <tr><td>Icons</td><td>Google Material Symbols</td><td>Navigation and actions</td></tr>
+        <tr><td>Persistence</td><td>Browser localStorage</td><td>Scan history, session state</td></tr>
+      </table>
+
+      <h3 class="sec">8.2 Project File Structure</h3>
+<pre class="code">deepsea-sentinel/
+├── index.html        ← Landing page: URL input + hero
+├── scanning.html     ← Sonar animation + progress bars
+├── dashboard.html    ← Grade circle + module cards
+├── history.html      ← Searchable scan history table
+├── report.html       ← PDF report preview + export
+├── auth.html         ← Sign In / Create account
+├── admin.html        ← System metrics + user mgmt
+└── js/
+    └── app.js        ← Core DSS namespace
+</pre>
+    </td>
+  </tr>
+</table>
+<div class="page-num">19</div>
+</div>
+
+<!-- ═══ PAGE 19 — CODING: Key Snippets ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Pseudocode / Algorithm</td></tr>
+  <tr><td>
+    <h3 class="sec">Seeded Pseudo-Random Number Generator (app.js)</h3>
+<pre class="code">function seededRng(seed) {
+    let s = seed;
+    return function() {
+        s = (s * 1664525 + 1013904223) &amp; 0xffffffff;
+        return (s >>> 0) / 0xffffffff;
+    };
+}
+function hashStr(str) {
+    let h = 0;
+    for (let i = 0; i &lt; str.length; i++)
+        h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+    return Math.abs(h);
+}</pre>
+
+    <h3 class="sec">localStorage Persistence (app.js)</h3>
+<pre class="code">storage: {
+  get(key)       { return JSON.parse(localStorage.getItem(key)); },
+  set(key, val)  { localStorage.setItem(key, JSON.stringify(val)); },
+  addToHistory(scan) {
+    const hist = this.get('scan_history') || [];
+    hist.unshift(scan);
+    if (hist.length > 50) hist.splice(50);
+    this.set('scan_history', hist);
+  }
+}</pre>
+
+    <h3 class="sec">Grade Calculation (app.js)</h3>
+<pre class="code">function calcGrade(ssl, hdrs, files, dns, tech) {
+  const w = ssl*0.30 + hdrs*0.25 + files*0.25
+            + dns*0.10 + tech*0.10;
+  const score = Math.round(w);
+  let grade;
+  if (score >= 90) grade = 'A';
+  else if (score >= 70) grade = 'B';
+  else if (score >= 50) grade = 'C';
+  else if (score >= 30) grade = 'D';
+  else grade = 'F';
+  return { score, grade };
+}</pre>
+  </td></tr>
+</table>
+<div class="page-num">20</div>
+</div>
+
+<!-- ═══ PAGE 20 — SCREENSHOTS: Landing + Auth ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots</td></tr>
+  <tr><td>
+    <h3 class="sec">Landing Page (index.html)</h3>
+    <img class="ss-img" src="srs_assets/ss_index.png" alt="Landing Page"/>
+    <p class="fig-cap">Fig. 8.1 — DeepSea Sentinel Landing Page</p>
+
+    <h3 class="sec">Authentication Page (auth.html)</h3>
+    <img class="ss-img" src="srs_assets/ss_auth.png" alt="Auth Page"/>
+    <p class="fig-cap">Fig. 8.2 — Sign In Page</p>
+  </td></tr>
+</table>
+<div class="page-num">21</div>
+</div>
+
+<!-- ═══ PAGE 21 — SCREENSHOTS: Scanning + Dashboard ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots (continued)</td></tr>
+  <tr><td>
+    <h3 class="sec">Scanning Page (scanning.html)</h3>
+    <img class="ss-img" src="srs_assets/ss_scanning.png" alt="Scanning Page"/>
+    <p class="fig-cap">Fig. 8.3 — Sonar Scanner with Module Progress Bars</p>
+
+    <h3 class="sec">Dashboard (dashboard.html)</h3>
+    <img class="ss-img" src="srs_assets/ss_dashboard.png" alt="Dashboard"/>
+    <p class="fig-cap">Fig. 8.4 — Vulnerability Dashboard: Grade + Module Cards</p>
+  </td></tr>
+</table>
+<div class="page-num">22</div>
+</div>
+
+<!-- ═══ PAGE 22 — SCREENSHOTS: History ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots (continued)</td></tr>
+  <tr><td>
+    <h3 class="sec">Scan History (history.html)</h3>
+    <img class="ss-img" src="srs_assets/ss_history.png" alt="History"/>
+    <p class="fig-cap">Fig. 8.5 — Searchable Scan History Table</p>
+  </td></tr>
+</table>
+<div class="page-num">23</div>
+</div>
+
+<!-- ═══ PAGE 23 — SCREENSHOT: Admin ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">Flowchart/Diagram/Screenshots (continued)</td></tr>
+  <tr><td>
+    <h3 class="sec">Admin Panel (admin.html)</h3>
+    <img class="ss-img" src="srs_assets/ss_admin.png" alt="Admin"/>
+    <p class="fig-cap">Fig. 8.6 — Admin Control Center: CPU, Memory, Uptime, Services</p>
+  </td></tr>
+</table>
+<div class="page-num">24</div>
+</div>
+
+<!-- ═══ PAGE 24 — SECTION 9: TESTING (Unit Tests) ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">9</td>
+    <td class="obj-body">
+      <span class="obj-title">Unit and System Testing</span>
+
+      <h3 class="sec">9.1 Unit Test Cases</h3>
+      <table class="data-tbl" style="font-size:9.5pt">
+        <tr><th>ID</th><th>Module</th><th>Description</th><th>Expected</th><th>Result</th></tr>
+        <tr><td>UT-01</td><td>URL Validator</td><td>Valid HTTPS URL passes</td><td>Redirects to scanning</td><td>✔ Pass</td></tr>
+        <tr><td>UT-02</td><td>URL Validator</td><td>Empty input rejected</td><td>Alert message</td><td>✔ Pass</td></tr>
+        <tr><td>UT-03</td><td>URL Validator</td><td>No-protocol URL fixed</td><td>Prepends https://</td><td>✔ Pass</td></tr>
+        <tr><td>UT-04</td><td>Score Calc</td><td>All 100 → grade A</td><td>Grade A, Score 100</td><td>✔ Pass</td></tr>
+        <tr><td>UT-05</td><td>Score Calc</td><td>All 0 → grade F</td><td>Grade F, Score 0</td><td>✔ Pass</td></tr>
+        <tr><td>UT-06</td><td>localStorage</td><td>Scan saves to history</td><td>History has 1 entry</td><td>✔ Pass</td></tr>
+        <tr><td>UT-07</td><td>localStorage</td><td>History capped at 50</td><td>Length = 50</td><td>✔ Pass</td></tr>
+        <tr><td>UT-08</td><td>Seeded RNG</td><td>Same domain = same grade</td><td>Identical results</td><td>✔ Pass</td></tr>
+        <tr><td>UT-09</td><td>PDF Export</td><td>printReport() opens window</td><td>New window opens</td><td>✔ Pass</td></tr>
+        <tr><td>UT-10</td><td>PDF Export</td><td>Empty scan shows alert</td><td>Alert: No data</td><td>✔ Pass</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<div class="page-num">25</div>
+</div>
+
+<!-- ═══ PAGE 25 — TESTING: System Tests ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">9.2 System / Integration Test Cases</h3>
+    <table class="data-tbl" style="font-size:9.5pt">
+      <tr><th>ID</th><th>Description</th><th>Steps</th><th>Expected</th><th>Result</th></tr>
+      <tr><td>ST-01</td><td>End-to-end scan</td><td>Enter URL → Start Scan</td><td>Dashboard with grade + 5 cards</td><td>✔ Pass</td></tr>
+      <tr><td>ST-02</td><td>History persistence</td><td>Scan → go to history</td><td>Scan appears in table</td><td>✔ Pass</td></tr>
+      <tr><td>ST-03</td><td>History delete</td><td>Click Delete on scan</td><td>Scan removed</td><td>✔ Pass</td></tr>
+      <tr><td>ST-04</td><td>Deterministic rescan</td><td>Scan same URL twice</td><td>Identical results</td><td>✔ Pass</td></tr>
+      <tr><td>ST-05</td><td>PDF content</td><td>Scan → Download PDF</td><td>All data populated</td><td>✔ Pass</td></tr>
+      <tr><td>ST-06</td><td>Auth page renders</td><td>Open auth.html</td><td>Form visible</td><td>✔ Pass</td></tr>
+      <tr><td>ST-07</td><td>Admin metrics</td><td>Open admin.html</td><td>Charts + gauges shown</td><td>✔ Pass</td></tr>
+      <tr><td>ST-08</td><td>Navigation</td><td>Click all nav links</td><td>All links functional</td><td>✔ Pass</td></tr>
+    </table>
+  </td></tr>
+</table>
+<div class="page-num">26</div>
+</div>
+
+<!-- ═══ PAGE 26 — SECTION 10: RMMM (Risk) ═══ -->
+<div class="page">
+<div class="pg-hdr">
+  <img src="srs_assets/cuj_logo_official.jpeg" alt="CUJ"/>
+  <div class="pg-hdr-txt">
+    <div class="d1">Department of Computer Science &amp; Engineering</div>
+    <div class="d2">Central University of Jammu</div>
+  </div>
+</div>
+<hr class="hdr-rule"/>
+
+<table class="info-tbl">
+  <tr><td class="lbl">Course Name &amp; Code</td><td colspan="3">Software Engineering BECCS2C025</td></tr>
+  <tr><td class="lbl">Academic Term</td><td colspan="3">2025-26</td></tr>
+  <tr><td class="lbl">Student Enrolment No.</td><td>24BECCS47</td><td style="font-weight:bold;width:10%">Batch</td><td style="width:12%">2024-2028</td></tr>
+  <tr><td class="lbl">Student Name</td><td colspan="3">Satyam Kumar Chauhan</td></tr>
+</table>
+
+<table class="obj-tbl">
+  <tr><td class="obj-hdr" colspan="2">Objective/Title</td></tr>
+  <tr>
+    <td class="obj-num">10</td>
+    <td class="obj-body">
+      <span class="obj-title">RMMM Plan</span>
+
+      <h3 class="sec">10.1 Risk Identification and Mitigation</h3>
+      <table class="data-tbl" style="font-size:9.5pt">
+        <tr><th>ID</th><th>Risk</th><th>Prob.</th><th>Impact</th><th>Mitigation</th></tr>
+        <tr><td>R-01</td><td>Target blocks scanner</td><td>High</td><td>Med</td><td>Graceful error; partial results</td></tr>
+        <tr><td>R-02</td><td>Scan timeout</td><td>Med</td><td>Med</td><td>Per-module 10s timeout</td></tr>
+        <tr><td>R-03</td><td>Unauthorised scanning</td><td>Med</td><td>High</td><td>Mandatory ToS checkbox</td></tr>
+        <tr><td>R-04</td><td>SSRF via manipulated URLs</td><td>Med</td><td>Crit</td><td>Validate URLs; block private IPs</td></tr>
+        <tr><td>R-05</td><td>localStorage data loss</td><td>Med</td><td>Low</td><td>UI warning; export-to-JSON (v2)</td></tr>
+        <tr><td>R-06</td><td>CDN dependency failure</td><td>Low</td><td>High</td><td>Bundle critical CSS inline</td></tr>
+        <tr><td>R-07</td><td>Scope creep beyond MVP</td><td>High</td><td>Med</td><td>Strict MVP list; tag extras v2</td></tr>
+        <tr><td>R-08</td><td>Cross-browser issues</td><td>Med</td><td>Med</td><td>Test Chrome, Firefox, Edge</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<div class="page-num">27</div>
+</div>
+
+<!-- ═══ PAGE 27 — RMMM (Monitoring + Management) ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">About</td></tr>
+  <tr><td>
+    <h3 class="sec">10.2 Monitoring Plan</h3>
+    <table class="data-tbl">
+      <tr><th>Metric</th><th>How to Monitor</th><th>Alert Threshold</th></tr>
+      <tr><td>Scan completion rate</td><td>Console logs: success vs. fail</td><td>Failure rate &gt; 20%</td></tr>
+      <tr><td>Avg scan duration</td><td>Timestamp diff: start → dashboard</td><td>Avg &gt; 15 seconds</td></tr>
+      <tr><td>localStorage usage</td><td>navigator.storage.estimate()</td><td>Usage &gt; 4 MB</td></tr>
+      <tr><td>PDF export success</td><td>try/catch on window.open()</td><td>&gt; 5% exports fail</td></tr>
+      <tr><td>JS errors</td><td>window.onerror global handler</td><td>Any uncaught exception</td></tr>
+    </table>
+
+    <h3 class="sec">10.3 Management Plan</h3>
+    <table class="data-tbl">
+      <tr><th>Action</th><th>Trigger</th><th>Responsible</th></tr>
+      <tr><td>Increase simulation timeout</td><td>Avg scan &gt; 12s</td><td>Developer</td></tr>
+      <tr><td>Self-host Tailwind/Fonts</td><td>CDN unavailable &gt; 1%</td><td>Developer</td></tr>
+      <tr><td>Implement rate limiting</td><td>Abuse patterns detected</td><td>Developer</td></tr>
+      <tr><td>Add export-to-JSON</td><td>User requests for backup</td><td>Developer (v2.0)</td></tr>
+      <tr><td>Build Node.js backend</td><td>Real scanning needed</td><td>Developer (v2.0)</td></tr>
+    </table>
+  </td></tr>
+</table>
+<div class="page-num">28</div>
+</div>
+
+<!-- ═══ PAGE 28 — REFERENCES ═══ -->
+<div class="page">
+
+<table class="box-tbl">
+  <tr><td class="box-hdr">References</td></tr>
+  <tr><td>
+    <ol style="line-height:2.0">
+      <li>OWASP Top 10 — Open Web Application Security Project.
+          <em>https://owasp.org/www-project-top-ten/</em></li>
+      <li>Mozilla Observatory — HTTP Security Header Testing Tool.
+          <em>https://observatory.mozilla.org/</em></li>
+      <li>Qualys SSL Labs API Documentation.
+          <em>https://github.com/ssllabs/ssllabs-scan/blob/master/ssllabs-api-docs-v3.md</em></li>
+      <li>SecurityHeaders.com — HTTP Response Header Scanner.
+          <em>https://securityheaders.com/</em></li>
+      <li>IEEE 830-1998 — IEEE Recommended Practice for SRS.
+          <em>IEEE Computer Society, 1998.</em></li>
+      <li>Tailwind CSS Documentation. <em>https://tailwindcss.com/docs</em></li>
+      <li>MDN Web Docs — Web APIs: localStorage, window.print, fetch.
+          <em>https://developer.mozilla.org/en-US/docs/Web/API</em></li>
+      <li>Google Fonts — Inter and Space Grotesk typefaces.
+          <em>https://fonts.google.com</em></li>
+      <li>Wappalyzer — Technology fingerprinting methodology.
+          <em>https://www.wappalyzer.com/</em></li>
+      <li>Node.js Documentation — tls, dns, net, http modules.
+          <em>https://nodejs.org/docs/latest/api/</em></li>
+    </ol>
+  </td></tr>
+</table>
+<div class="page-num">29</div>
+</div>
+
+<div style="display:none">.</div>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+
+# Output files
+*.txt
+analyze_out.txt
+fix_headers_out.txt
+split_out.txt
+
+# PDF outputs (large files - optional, remove these lines if you want PDFs tracked)
+*.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

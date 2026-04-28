@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scanning - DeepSea Sentinel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode:"class",
+  theme:{ extend:{
+    colors:{"primary-container":"#0ea5e9","surface-tint":"#89ceff","surface":"#0b1326","surface-container-highest":"#2d3449","on-primary":"#00344d","secondary-fixed-dim":"#4fdbc8","surface-variant":"#2d3449","on-surface":"#dae2fd","on-surface-variant":"#bec8d2","tertiary-fixed-dim":"#3cddc7","surface-container":"#171f33","surface-dim":"#0b1326","inverse-primary":"#006591","error-container":"#93000a","outline-variant":"#3e4850","tertiary":"#3cddc7","secondary":"#4fdbc8","surface-container-low":"#131b2e","on-background":"#dae2fd","surface-bright":"#31394d","primary":"#89ceff","secondary-container":"#04b4a2","error":"#ffb4ab","primary-fixed-dim":"#89ceff","outline":"#88929b","on-error":"#690005","on-secondary":"#003731","surface-container-high":"#222a3d","primary-fixed":"#c9e6ff","surface-container-lowest":"#060e20","background":"#0b1326"},
+    spacing:{"card-padding":"24px","gutter":"24px"},
+    fontFamily:{"mono-label":["Space Grotesk"],"body-md":["Inter"],"grade-display":["Space Grotesk"],"h1":["Inter"],"h3":["Inter"],"mono-data":["Space Grotesk"]},
+    fontSize:{"mono-label":["14px",{"lineHeight":"1.4","letterSpacing":"0.05em","fontWeight":"500"}],"body-md":["16px",{"lineHeight":"1.6","fontWeight":"400"}],"grade-display":["48px",{"lineHeight":"1","fontWeight":"700"}],"h1":["40px",{"lineHeight":"1.2","letterSpacing":"-0.02em","fontWeight":"700"}],"h3":["24px",{"lineHeight":"1.3","fontWeight":"600"}],"mono-data":["12px",{"lineHeight":"1.4","fontWeight":"400"}]}
+  }}
+}
+</script>
+<style>
+.radar-sweep{background:conic-gradient(from 0deg,transparent 0%,rgba(14,165,233,.4)10%,transparent 20%);animation:sweep 4s linear infinite}
+@keyframes sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.pulse-glow{animation:pg 2s ease-in-out infinite}
+@keyframes pg{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.6;transform:scale(1.05)}}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24}
+</style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen overflow-hidden selection:bg-primary/30">
+<!-- Atmospheric Background -->
+<div class="fixed inset-0 z-0">
+  <div class="absolute inset-0 bg-gradient-to-tr from-surface via-surface-container-lowest to-surface"></div>
+  <div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary/5 blur-[100px] rounded-full"></div>
+</div>
+<!-- Nav -->
+<header class="sticky top-0 z-50 flex justify-between items-center w-full px-8 py-3 bg-slate-950/40 backdrop-blur-xl border-b border-white/10">
+  <div class="flex items-center gap-4">
+    <a href="index.html" class="text-xl font-black tracking-tighter text-sky-500 drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]">DeepSea Sentinel</a>
+  </div>
+  <div class="hidden md:flex items-center gap-8">
+    <nav class="flex gap-6 font-inter text-sm tracking-wide font-medium">
+      <a class="text-sky-400 border-b-2 border-sky-400 pb-1" href="index.html">Dashboard</a>
+      <a class="text-slate-400 hover:text-slate-100 transition-all" href="history.html">History</a>
+      <a class="text-slate-400 hover:text-slate-100 transition-all" href="report.html">Reports</a>
+    </nav>
+  </div>
+  <div class="flex items-center gap-4 text-sky-500">
+    <button class="p-2 hover:bg-white/5 rounded-full transition-all"><span class="material-symbols-outlined">notifications_active</span></button>
+    <button class="p-2 hover:bg-white/5 rounded-full transition-all"><span class="material-symbols-outlined">settings</span></button>
+  </div>
+</header>
+
+<main class="relative z-10 flex flex-col lg:flex-row h-[calc(100vh-64px)] w-full p-8 gap-6">
+  <!-- LEFT: Status -->
+  <div class="flex-1 flex flex-col justify-center items-center">
+    <div class="text-center mb-12">
+      <h1 class="font-h1 text-h1 text-on-surface mb-2">Deep Scanning <span class="text-primary scan-target">target.com</span></h1>
+      <div class="flex items-center justify-center gap-3">
+        <span class="flex h-3 w-3 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+        </span>
+        <p class="font-mono-label text-mono-label text-primary uppercase">Active Session: Depth 400m</p>
+      </div>
+    </div>
+
+    <!-- SONAR -->
+    <div class="relative w-[280px] h-[280px] md:w-[420px] md:h-[420px] flex items-center justify-center">
+      <div class="absolute inset-0 border border-white/5 rounded-full"></div>
+      <div class="absolute inset-[15%] border border-white/10 rounded-full"></div>
+      <div class="absolute inset-[30%] border border-white/10 rounded-full"></div>
+      <div class="absolute inset-[45%] border border-white/20 rounded-full"></div>
+      <div class="absolute inset-0 rounded-full radar-sweep"></div>
+      <!-- Center -->
+      <div class="relative z-20 w-28 h-28 rounded-full bg-white/5 backdrop-blur-2xl border border-white/20 flex flex-col items-center justify-center shadow-[0_0_50px_rgba(14,165,233,0.3)]">
+        <span class="font-grade-display text-3xl text-primary"><span id="overall-progress">0</span><span class="text-xl">%</span></span>
+        <span class="font-mono-data text-[10px] text-outline-variant uppercase">Progress</span>
+      </div>
+      <!-- Floating Nodes -->
+      <div class="absolute top-[20%] left-[15%] flex flex-col items-center gap-1 pulse-glow">
+        <div class="w-2 h-2 bg-secondary rounded-full"></div>
+        <span class="text-[10px] font-mono-data text-secondary/60">SSL_VAL</span>
+      </div>
+      <div class="absolute bottom-[25%] right-[20%] flex flex-col items-center gap-1 pulse-glow" style="animation-delay:.5s">
+        <div class="w-2 h-2 bg-error rounded-full"></div>
+        <span class="text-[10px] font-mono-data text-error/60">THREAT_V3</span>
+      </div>
+      <div class="absolute top-[40%] right-[10%] flex flex-col items-center gap-1 pulse-glow" style="animation-delay:1.2s">
+        <div class="w-2 h-2 bg-primary rounded-full"></div>
+        <span class="text-[10px] font-mono-data text-primary/60">HDR_CHK</span>
+      </div>
+    </div>
+
+    <!-- Log Terminal -->
+    <div class="mt-8 max-w-md w-full bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 flex items-center gap-4">
+      <span class="material-symbols-outlined text-primary">terminal</span>
+      <div class="flex-1 overflow-hidden">
+        <p id="scan-log" class="font-mono-data text-primary truncate text-sm">SEC_ENGINE: Initializing...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Module Progress -->
+  <div class="w-full lg:w-[380px] flex flex-col gap-4 overflow-y-auto pr-1">
+    <h3 class="font-mono-label text-mono-label text-outline uppercase px-1">Security Modules</h3>
+
+    <!-- SSL -->
+    <div class="bg-gradient-to-br from-white/10 to-white/[0.02] backdrop-blur-xl border border-white/10 p-card-padding rounded-xl">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-secondary">lock</span>
+          <span class="font-semibold text-sm">SSL/TLS Configuration</span>
+        </div>
+        <span id="pct-ssl" class="font-mono-data text-secondary text-sm">0%</span>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div id="bar-ssl" class="h-full bg-secondary shadow-[0_0_8px_rgba(79,219,200,.5)] transition-all duration-100" style="width:0%"></div>
+      </div>
+      <p class="mt-2 font-mono-data text-outline text-[11px]">Validating certificate chain and cipher suites.</p>
+    </div>
+
+    <!-- Headers -->
+    <div class="bg-gradient-to-br from-white/10 to-white/[0.02] backdrop-blur-xl border border-white/10 p-card-padding rounded-xl">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">policy</span>
+          <span class="font-semibold text-sm">Security Headers</span>
+        </div>
+        <span id="pct-headers" class="font-mono-data text-primary text-sm">0%</span>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div id="bar-headers" class="h-full bg-primary shadow-[0_0_8px_rgba(14,165,233,.5)] transition-all duration-100" style="width:0%"></div>
+      </div>
+      <p class="mt-2 font-mono-data text-outline text-[11px]">Checking CSP, HSTS, X-Frame-Options.</p>
+    </div>
+
+    <!-- Files -->
+    <div class="bg-gradient-to-br from-white/10 to-white/[0.02] backdrop-blur-xl border border-white/10 p-card-padding rounded-xl">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-error">folder_zip</span>
+          <span class="font-semibold text-sm">Sensitive Files</span>
+        </div>
+        <span id="pct-files" class="font-mono-data text-error text-sm">0%</span>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div id="bar-files" class="h-full bg-error shadow-[0_0_8px_rgba(255,180,171,.5)] transition-all duration-100" style="width:0%"></div>
+      </div>
+      <p class="mt-2 font-mono-data text-outline text-[11px]">Probing for .env, .git, backup files...</p>
+    </div>
+
+    <!-- DNS -->
+    <div class="bg-gradient-to-br from-white/10 to-white/[0.02] backdrop-blur-xl border border-white/10 p-card-padding rounded-xl">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-surface-tint">dns</span>
+          <span class="font-semibold text-sm">DNS Records</span>
+        </div>
+        <span id="pct-dns" class="font-mono-data text-surface-tint text-sm">0%</span>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div id="bar-dns" class="h-full bg-surface-tint shadow-[0_0_8px_rgba(137,206,255,.5)] transition-all duration-100" style="width:0%"></div>
+      </div>
+      <p class="mt-2 font-mono-data text-outline text-[11px]">Validating SPF, DKIM, DMARC records.</p>
+    </div>
+
+    <!-- Tech -->
+    <div class="bg-gradient-to-br from-white/10 to-white/[0.02] backdrop-blur-xl border border-white/10 p-card-padding rounded-xl">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-tertiary">layers</span>
+          <span class="font-semibold text-sm">Tech Stack</span>
+        </div>
+        <span id="pct-tech" class="font-mono-data text-tertiary text-sm">0%</span>
+      </div>
+      <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div id="bar-tech" class="h-full bg-tertiary shadow-[0_0_8px_rgba(60,221,199,.5)] transition-all duration-100" style="width:0%"></div>
+      </div>
+      <p class="mt-2 font-mono-data text-outline text-[11px]">Fingerprinting server and framework stack.</p>
+    </div>
+  </div>
+</main>
+
+<!-- Footer Status Bar -->
+<footer class="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/60 backdrop-blur-2xl border-t border-white/10 px-8 py-2 flex justify-between items-center">
+  <div class="flex items-center gap-6">
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">shield</span><span class="font-mono-data text-[11px] uppercase tracking-wider text-slate-400">System Secure</span></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">router</span><span class="font-mono-data text-[11px] uppercase tracking-wider text-slate-400">Node: Atlantic-04</span></div>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="font-mono-data text-[11px] text-primary/80">LATENCY: 24MS</span>
+    <div class="h-4 w-px bg-white/10"></div>
+    <a href="index.html" class="flex items-center gap-2 font-mono-label text-xs text-error hover:text-error-container transition-colors">
+      <span class="material-symbols-outlined text-sm">cancel</span>ABORT SCAN
+    </a>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>

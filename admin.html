@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Metrics - DeepSea Sentinel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode:"class",
+  theme:{ extend:{
+    colors:{"surface-variant":"#2d3449","on-primary-fixed":"#001e2f","secondary-fixed":"#71f8e4","surface-container-highest":"#2d3449","error":"#ffb4ab","surface-container":"#171f33","secondary-container":"#04b4a2","primary":"#89ceff","outline":"#88929b","on-tertiary":"#003731","primary-fixed-dim":"#89ceff","inverse-surface":"#dae2fd","surface-dim":"#0b1326","on-error":"#690005","inverse-primary":"#006591","outline-variant":"#3e4850","on-background":"#dae2fd","surface-container-high":"#222a3d","on-primary":"#00344d","surface":"#0b1326","on-tertiary-container":"#003b34","surface-bright":"#31394d","surface-container-lowest":"#060e20","background":"#0b1326","on-surface":"#dae2fd","on-secondary":"#003731","tertiary-fixed-dim":"#3cddc7","primary-fixed":"#c9e6ff","on-error-container":"#ffdad6","tertiary-container":"#00af9d","surface-tint":"#89ceff","on-primary-container":"#003751","on-secondary-container":"#003f38","primary-container":"#0ea5e9","secondary":"#4fdbc8","on-surface-variant":"#bec8d2","tertiary":"#3cddc7","surface-container-low":"#131b2e"},
+    spacing:{"margin":"32px","gutter":"24px","container-max":"1440px","unit":"4px","card-padding":"24px"},
+    fontFamily:{"mono-data":["Space Grotesk"],"h2":["Inter"],"h3":["Inter"],"grade-display":["Space Grotesk"],"h1":["Inter"],"mono-label":["Space Grotesk"],"body-md":["Inter"],"body-lg":["Inter"]},
+    fontSize:{"mono-data":["12px",{"lineHeight":"1.4","fontWeight":"400"}],"h2":["32px",{"lineHeight":"1.2","fontWeight":"600"}],"h3":["24px",{"lineHeight":"1.3","fontWeight":"600"}],"grade-display":["48px",{"lineHeight":"1","fontWeight":"700"}],"h1":["40px",{"lineHeight":"1.2","letterSpacing":"-0.02em","fontWeight":"700"}],"mono-label":["14px",{"lineHeight":"1.4","letterSpacing":"0.05em","fontWeight":"500"}],"body-md":["16px",{"lineHeight":"1.6","fontWeight":"400"}],"body-lg":["18px",{"lineHeight":"1.6","fontWeight":"400"}]}
+  }}
+}
+</script>
+<style>
+.glass-card{background:linear-gradient(180deg,rgba(255,255,255,.1)0%,rgba(255,255,255,.02)100%);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1)}
+.ocean-bg{background:radial-gradient(circle at 50% 50%,#0b1326 0%,#060e20 100%);position:fixed;inset:0;z-index:-1}
+.atmospheric-glow{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(14,165,233,.1)0%,transparent 70%);filter:blur(80px);z-index:-1}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+@keyframes bar-anim{0%,100%{opacity:1}50%{opacity:.6}}
+.chart-bar{transition:height 1.5s ease-in-out}
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<div class="ocean-bg"></div>
+<div class="atmospheric-glow top-[-100px] left-[-100px]"></div>
+<div class="atmospheric-glow bottom-[-100px] right-[-100px]"></div>
+
+<!-- Nav -->
+<nav class="sticky top-0 z-50 flex justify-between items-center w-full px-8 py-3 bg-slate-950/40 backdrop-blur-xl border-b border-white/10 shadow-2xl">
+  <div class="flex items-center gap-8">
+    <a href="index.html" class="text-xl font-black tracking-tighter text-sky-500 drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]">DeepSea Sentinel</a>
+    <div class="hidden md:flex gap-6 items-center">
+      <a class="font-inter text-sm font-medium text-sky-400 border-b-2 border-sky-400 pb-1" href="#">Dashboard</a>
+      <a class="font-inter text-sm font-medium text-slate-400 hover:text-slate-100 transition-all" href="history.html">History</a>
+      <a class="font-inter text-sm font-medium text-slate-400 hover:text-slate-100 transition-all" href="report.html">Reports</a>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="relative hidden lg:block">
+      <input class="bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-sky-500 w-64" placeholder="Search system nodes..." type="text"/>
+    </div>
+    <button class="material-symbols-outlined text-slate-400 hover:bg-white/5 p-2 rounded-full transition-all">notifications_active</button>
+    <button class="material-symbols-outlined text-slate-400 hover:bg-white/5 p-2 rounded-full transition-all">settings</button>
+    <a href="auth.html" class="material-symbols-outlined text-slate-400 hover:bg-white/5 p-2 rounded-full transition-all">account_circle</a>
+  </div>
+</nav>
+
+<div class="flex">
+  <!-- Sidebar -->
+  <aside class="hidden lg:flex flex-col justify-between h-screen w-64 border-r border-white/5 fixed left-0 top-0 pt-20 pb-8 bg-slate-950/60 backdrop-blur-2xl">
+    <div class="px-4 space-y-2">
+      <div class="mb-8 px-4">
+        <h4 class="font-inter text-xs uppercase tracking-widest font-semibold text-sky-500 mb-1">Vulnerability Engine</h4>
+        <p class="text-[10px] text-slate-500 uppercase tracking-tighter">Admin Control Center</p>
+      </div>
+      <a href="index.html" class="flex items-center gap-3 text-slate-500 py-3 px-4 hover:bg-white/5 hover:text-slate-200 transition-all"><span class="material-symbols-outlined">grid_view</span><span class="font-inter text-xs uppercase tracking-widest font-semibold">Dashboard</span></a>
+      <a href="history.html" class="flex items-center gap-3 text-slate-500 py-3 px-4 hover:bg-white/5 hover:text-slate-200 transition-all"><span class="material-symbols-outlined">history</span><span class="font-inter text-xs uppercase tracking-widest font-semibold">History</span></a>
+      <a href="report.html" class="flex items-center gap-3 text-slate-500 py-3 px-4 hover:bg-white/5 hover:text-slate-200 transition-all"><span class="material-symbols-outlined">analytics</span><span class="font-inter text-xs uppercase tracking-widest font-semibold">Reports</span></a>
+      <a href="#" class="flex items-center gap-3 bg-white/10 text-sky-400 border-r-4 border-sky-500 shadow-[0_0_20px_rgba(14,165,233,0.2)] rounded-sm py-3 px-4"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">hub</span><span class="font-inter text-xs uppercase tracking-widest font-semibold">Network</span></a>
+      <div class="pt-10">
+        <a href="index.html" class="block w-full bg-gradient-to-r from-secondary-container to-tertiary-container text-on-primary-fixed font-bold text-xs uppercase tracking-widest py-3 rounded-lg text-center flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-transform">
+          <span class="material-symbols-outlined text-sm">add_circle</span>New Scan
+        </a>
+      </div>
+    </div>
+    <div class="px-4 space-y-1">
+      <a href="#" class="flex items-center gap-3 text-slate-500 py-2 px-4 hover:text-slate-200 transition-all"><span class="material-symbols-outlined text-sm">shield</span><span class="font-inter text-xs uppercase tracking-widest font-semibold">System Status</span></a>
+      <a href="auth.html" class="flex items-center gap-3 text-slate-500 py-2 px-4 hover:text-slate-200 transition-all"><span class="material-symbols-outlined text-sm">logout</span><span class="font-inter text-xs uppercase tracking-widest font-semibold">Logout</span></a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="lg:ml-64 flex-1 p-8">
+    <header class="mb-10">
+      <div class="flex justify-between items-end">
+        <div>
+          <h1 class="font-h1 text-h1 text-on-background mb-2">System Metrics</h1>
+          <p class="text-on-surface-variant font-body-lg">Real-time health telemetry and user activity monitoring.</p>
+        </div>
+        <div class="flex gap-4">
+          <div class="glass-card px-4 py-2 rounded-lg flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(60,221,199,0.8)] animate-pulse"></div>
+            <span class="font-mono-data text-mono-data uppercase">Node Alpha: Online</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-12 gap-gutter">
+      <!-- CPU -->
+      <div class="col-span-12 lg:col-span-4 glass-card p-card-padding rounded-xl relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-6">
+          <div><h3 class="font-h3 text-h3 text-primary mb-1">CPU Utilization</h3><span class="text-on-surface-variant font-mono-label">Core Engine Load</span></div>
+          <span id="cpu-pct" class="font-grade-display text-grade-display text-tertiary drop-shadow-[0_0_12px_rgba(60,221,199,0.3)]">32<span class="text-2xl">%</span></span>
+        </div>
+        <div class="h-24 flex items-end gap-1 mb-4" id="cpu-bars">
+          <div class="chart-bar flex-1 bg-sky-500/30 rounded-t-sm" style="height:40%"></div>
+          <div class="chart-bar flex-1 bg-sky-500/30 rounded-t-sm" style="height:60%"></div>
+          <div class="chart-bar flex-1 bg-sky-500/30 rounded-t-sm" style="height:35%"></div>
+          <div class="chart-bar flex-1 bg-sky-500/30 rounded-t-sm" style="height:80%"></div>
+          <div class="chart-bar flex-1 bg-sky-500/30 rounded-t-sm" style="height:50%"></div>
+          <div class="chart-bar flex-1 bg-sky-500/30 rounded-t-sm" style="height:45%"></div>
+          <div class="chart-bar flex-1 bg-sky-500/40 rounded-t-sm" style="height:32%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] font-mono-data text-slate-500"><span>LIVE</span><span>T-15M</span><span>T-30M</span></div>
+      </div>
+
+      <!-- Memory -->
+      <div class="col-span-12 lg:col-span-4 glass-card p-card-padding rounded-xl relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-6">
+          <div><h3 class="font-h3 text-h3 text-secondary mb-1">Memory Pool</h3><span class="text-on-surface-variant font-mono-label">Buffer Capacity</span></div>
+          <span class="font-grade-display text-grade-display text-secondary drop-shadow-[0_0_12px_rgba(79,219,200,0.3)]">6.4<span class="text-xl">GB</span></span>
+        </div>
+        <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden mb-4">
+          <div class="h-full bg-gradient-to-r from-secondary to-tertiary w-[64%] shadow-[0_0_15px_rgba(79,219,200,0.5)]"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Cached</p><p class="font-mono-data text-lg">2.1 GB</p></div>
+          <div><p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Available</p><p class="font-mono-data text-lg">9.6 GB</p></div>
+        </div>
+      </div>
+
+      <!-- Uptime -->
+      <div class="col-span-12 lg:col-span-4 glass-card p-card-padding rounded-xl">
+        <div class="flex justify-between items-center mb-6"><h3 class="font-h3 text-h3 text-on-background">System Uptime</h3><span class="material-symbols-outlined text-tertiary">timer</span></div>
+        <div class="space-y-4">
+          <div class="flex items-center gap-4"><span class="font-grade-display text-4xl text-on-background">99.98</span><span class="text-tertiary font-mono-label">% SLA</span></div>
+          <div class="space-y-3">
+            <div class="flex justify-between text-xs"><span class="text-slate-500 uppercase">Database Cluster</span><span class="text-tertiary">OK</span></div>
+            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-tertiary w-full"></div></div>
+            <div class="flex justify-between text-xs"><span class="text-slate-500 uppercase">Neural Scanner</span><span class="text-tertiary">OK</span></div>
+            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-tertiary w-[99.4%]"></div></div>
+            <div class="flex justify-between text-xs"><span class="text-slate-500 uppercase">API Gateway</span><span class="text-error">DEGRADED</span></div>
+            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-error w-[84%]"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan Volume Chart -->
+      <div class="col-span-12 glass-card p-card-padding rounded-xl">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="font-h3 text-h3 text-on-background">Scan Volume Logs</h3>
+          <div class="flex gap-2">
+            <button class="px-3 py-1 text-[10px] rounded border border-white/10 hover:bg-white/5 transition-all">24H</button>
+            <button class="px-3 py-1 text-[10px] rounded border border-sky-500/50 bg-sky-500/10 text-sky-400">7D</button>
+            <button class="px-3 py-1 text-[10px] rounded border border-white/10 hover:bg-white/5 transition-all">30D</button>
+          </div>
+        </div>
+        <div id="volume-bars" class="h-48 w-full flex items-end justify-between gap-2 px-2">
+          <div class="chart-bar flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg transition-all cursor-pointer" style="height:20%" title="Mon: 120 scans"></div>
+          <div class="chart-bar flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg transition-all cursor-pointer" style="height:45%" title="Tue: 280 scans"></div>
+          <div class="chart-bar flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg transition-all cursor-pointer" style="height:35%" title="Wed: 210 scans"></div>
+          <div class="chart-bar flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg transition-all cursor-pointer" style="height:90%" title="Thu: 540 scans"></div>
+          <div class="chart-bar flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg transition-all cursor-pointer" style="height:75%" title="Fri: 450 scans"></div>
+          <div class="chart-bar flex-1 bg-primary/20 hover:bg-primary/40 rounded-t-lg transition-all cursor-pointer" style="height:60%" title="Sat: 360 scans"></div>
+          <div class="chart-bar flex-1 bg-primary/40 hover:bg-primary/60 rounded-t-lg transition-all cursor-pointer" style="height:55%" title="Sun: 330 scans"></div>
+        </div>
+        <div class="flex justify-between pt-4 border-t border-white/5 mt-4 text-[10px] font-mono-data text-slate-500">
+          <span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
+        </div>
+      </div>
+
+      <!-- User Management Table -->
+      <div class="col-span-12 glass-card rounded-xl overflow-hidden">
+        <div class="p-card-padding border-b border-white/10 flex justify-between items-center">
+          <div><h3 class="font-h3 text-h3 text-on-background">User Management</h3><p class="text-xs text-slate-500 uppercase tracking-widest mt-1">Active Analyst Sessions</p></div>
+          <button class="text-xs text-primary border border-primary/20 bg-primary/5 px-4 py-2 rounded-lg hover:bg-primary/10 transition-all">Manage Permissions</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead><tr class="text-[10px] text-slate-500 uppercase tracking-widest bg-white/5">
+              <th class="px-6 py-4 font-semibold">User Identity</th>
+              <th class="px-6 py-4 font-semibold">Security Role</th>
+              <th class="px-6 py-4 font-semibold">Last Activity</th>
+              <th class="px-6 py-4 font-semibold">Access Node</th>
+              <th class="px-6 py-4 font-semibold">Status</th>
+              <th class="px-6 py-4 font-semibold">Actions</th>
+            </tr></thead>
+            <tbody class="divide-y divide-white/5">
+              <tr class="hover:bg-white/5 transition-all">
+                <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs border border-primary/30">JD</div><div><div class="text-sm font-medium">Jordan Deckard</div><div class="text-[10px] text-slate-500">j.deckard@sentinel.sys</div></div></div></td>
+                <td class="px-6 py-4"><span class="text-xs px-2 py-1 bg-white/5 border border-white/10 rounded">Lead Analyst</span></td>
+                <td class="px-6 py-4 text-xs font-mono-data">2m ago</td>
+                <td class="px-6 py-4 text-xs font-mono-data text-slate-400">Terminal 09-A</td>
+                <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-tertiary"></div><span class="text-[10px] uppercase font-bold text-tertiary">Active</span></div></td>
+                <td class="px-6 py-4"><button class="material-symbols-outlined text-slate-500 hover:text-white transition-all text-lg">more_vert</button></td>
+              </tr>
+              <tr class="hover:bg-white/5 transition-all">
+                <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold text-xs border border-secondary/30">SR</div><div><div class="text-sm font-medium">Sarah Reiss</div><div class="text-[10px] text-slate-500">s.reiss@sentinel.sys</div></div></div></td>
+                <td class="px-6 py-4"><span class="text-xs px-2 py-1 bg-white/5 border border-white/10 rounded">System Auditor</span></td>
+                <td class="px-6 py-4 text-xs font-mono-data">14m ago</td>
+                <td class="px-6 py-4 text-xs font-mono-data text-slate-400">External VPN-4</td>
+                <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div><span class="text-[10px] uppercase font-bold text-slate-500">Idle</span></div></td>
+                <td class="px-6 py-4"><button class="material-symbols-outlined text-slate-500 hover:text-white transition-all text-lg">more_vert</button></td>
+              </tr>
+              <tr class="hover:bg-white/5 transition-all">
+                <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-error/20 flex items-center justify-center text-error font-bold text-xs border border-error/30">MK</div><div><div class="text-sm font-medium">Marcus Kaine</div><div class="text-[10px] text-slate-500">m.kaine@sentinel.sys</div></div></div></td>
+                <td class="px-6 py-4"><span class="text-xs px-2 py-1 bg-white/5 border border-white/10 rounded">Junior SecOp</span></td>
+                <td class="px-6 py-4 text-xs font-mono-data">Locked</td>
+                <td class="px-6 py-4 text-xs font-mono-data text-slate-400">N/A</td>
+                <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-error"></div><span class="text-[10px] uppercase font-bold text-error">Locked</span></div></td>
+                <td class="px-6 py-4"><button class="material-symbols-outlined text-slate-500 hover:text-white transition-all text-lg">more_vert</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Mobile FAB -->
+<div class="fixed bottom-8 right-8 lg:hidden">
+  <a href="index.html" class="w-14 h-14 rounded-full bg-primary-container text-on-primary shadow-2xl flex items-center justify-center active:scale-95 transition-transform block">
+    <span class="material-symbols-outlined">add</span>
+  </a>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+// Animate CPU bars live
+setInterval(() => {
+  document.querySelectorAll('#cpu-bars .chart-bar').forEach(b => {
+    const curr = parseInt(b.style.height) || 40;
+    const next = Math.max(10, Math.min(95, curr + (Math.random() - 0.45) * 15));
+    b.style.height = next.toFixed(0) + '%';
+  });
+  const pct = Math.round(Math.random() * 40 + 20);
+  document.getElementById('cpu-pct').innerHTML = pct + '<span class="text-2xl">%</span>';
+}, 2500);
+</script>
+</body>
+</html>
