@@ -46,7 +46,7 @@ python -m http.server 8080
 
 ## 🌐 Live Demo
 
-Hosted via **GitHub Pages**: [View Live →](https://YOUR_USERNAME.github.io/deepsea-sentinel)
+Hosted via **GitHub Pages**: [View Live →](https://blz911.github.io/deepsea-sentinel)
 
 ## 📄 Documentation
 
